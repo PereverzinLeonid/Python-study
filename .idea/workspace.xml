@@ -39,7 +39,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="restartRequiresConfirmation" value="false" />
   </component>
-  <component name="RunManager" selected="Python.draw">
+  <component name="RunManager" selected="Python.gun_obfuscated">
     <configuration name="Tomson_1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Python study" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -147,8 +147,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.draw" />
         <item itemvalue="Python.gun_obfuscated" />
+        <item itemvalue="Python.draw" />
         <item itemvalue="Python.Tomson_2" />
         <item itemvalue="Python.Tomson_3" />
         <item itemvalue="Python.Tomson_1" />
