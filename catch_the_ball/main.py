@@ -5,14 +5,14 @@ from random import randint
 
 # файл таблицы игроков
 name = input()
-top = open('Top_players.txt', 'w')
+top = open('players.txt', 'w+')
 
 pygame.init()
 FPS = 60
 
 # создание фона
-width = 1200
-height = 800
+width = 1000
+height = 1000
 screen = pygame.display.set_mode((width, height))
 screen.fill((0, 0, 0))
 
@@ -47,19 +47,19 @@ class unusually_ball():
     color = 0
 
 # начальные параметры: ограничистели скоростей, время жизни обычных шариков и ограничители на радиусы
-min_velocity = 1
-max_velocity = 3
-min_time_life = 100
-max_time_life = 200
-min_radius = 10
+min_velocity = 0
+max_velocity = 5
+min_time_life = 200
+max_time_life = 500
+min_radius = 50
 max_radius = 100
 
 # массив обчычных шариков
-count_usually_ball = 10
+count_usually_ball = 5
 data_usually_ball = []
 
 # массив необычных шариков
-count_unusually_ball = 5
+count_unusually_ball = 3
 data_unusually_ball = []
 
 # очки человека, набранные в игре
