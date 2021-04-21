@@ -5,7 +5,7 @@ from random import randint
 
 # файл таблицы игроков
 name = input()
-top = open('players.txt', 'w+')
+top = open('players.txt', 'a')
 
 pygame.init()
 FPS = 60
@@ -15,6 +15,7 @@ width = 1000
 height = 1000
 screen = pygame.display.set_mode((width, height))
 screen.fill((0, 0, 0))
+pygame.display.set_caption('catch the ball')
 
 # создание множеества цветов
 RED = (255, 0, 0)
@@ -107,8 +108,10 @@ while not finished:
     clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            output = "Player score = " + str(score) + " - " + name + "\n"
+            a = "0" * (7 - len(str(score)))
+            output = "Player score = " + a + str(score) + " - " + name + '\n'
             top.write(output) # вывод таблицы игроков
+            top.close()
             finished = True
         # проверка попадания игрока по шарику
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -116,11 +119,11 @@ while not finished:
             for i in range(count_usually_ball):
                 if (mouse_pos[0] - data_usually_ball[i].x_cordinant) ** 2 + (mouse_pos[1] - data_usually_ball[i].y_cordinant) ** 2 <= data_usually_ball[i].radius ** 2:
                     new_usually_ball(i)
-                    score = score + 1
+                    score = score + 19
             for i in range(count_unusually_ball):
                 if (mouse_pos[0] - data_unusually_ball[i].x_cordinant) ** 2 + (mouse_pos[1] - data_unusually_ball[i].y_cordinant) ** 2 <= data_unusually_ball[i].radius ** 2:
                     new_unusually_ball(i)
-                    score = score + 3
+                    score = score + 37
 
 
     # работа с обычным шариком
@@ -176,3 +179,19 @@ while not finished:
     screen.fill((0, 0, 0))
 
 pygame.quit()
+
+top = open('players.txt', 'r')
+top_of_players = []
+for i in top:
+    top_of_players.append(str(i))
+top.close()
+
+top_of_players.sort()
+
+top = open('players.txt', 'w')
+top.write(top_of_players[0])
+
+for i in range(len(top_of_players) - 1):
+    top.write(top_of_players[len(top_of_players) - 1 - i])
+
+top.close()
