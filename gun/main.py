@@ -30,7 +30,7 @@ COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
 # Начальные парметры
 max_life = 1000 # максимальное время жизни
-target_count = 3 # количсество целей
+target_count = 2 # количсество целей
 min_gun_len = 20 # длина пушки до выстрела
 max_gun_len = 80 # максимальная длина отрезка, изображающего пушку
 max_radius = 50 # максимальный радиус мишени
@@ -46,6 +46,7 @@ class target:
     r - радиус мишени
     x, y - координаты мишени
     vx, vy - скорости мишени
+    x_0 y_0 - координаты торпеды, котороый будут стрелять цели
     """
     def __init__(self):
         """
@@ -54,6 +55,8 @@ class target:
         self.r = min_radius + random() * max_radius
         self.x = min_radius + random() * (width - max_radius)
         self.y = min_radius + random() * (height - max_radius)
+        self.x_0 = 0
+        self.y_0 = 0
         self.vx = random() * max_velocity
         self.vy = random() * max_velocity
 
@@ -80,27 +83,13 @@ class target:
 
     def moving_target_type_2(self):
         """
-        Движение мишени второго тип: случайное отражение от стен
+        Просто стоящие неподвижные цели
         """
-        self.x += self.vx
-        self.y -= self.vy
-        if self.x >= width - self.r or self.x <= self.r:
-            self.vx = - random() * max_velocity
-            self.vy = random() * max_velocity
-        if self.y >= height - self.r or self.y <= self.r:
-            self.vx = random() * max_velocity
-            self.vy = - random() * max_velocity
-
-    def moving_target_type_3(self):
-        """
-        Движение мишени третьего тип: движение по окружности
-        """
-        self.x = self.x + self.vx * 0.5 + self.vy * 0.5
-        self.y = self.y + self.vx * (- 0.5) + self.vy * 0.5
         if self.x >= width - self.r or self.x <= self.r:
             self.vx = - self.vx
         if self.y >= height - self.r or self.y <= self.r:
             self.vy = - self.vy
+
 
 class gun:
     """
@@ -178,14 +167,14 @@ class bullet:
 
     def draw_bullet_type_2(self):
         """
-        Отрисовка снаряда: пуля / бомба -  вначале летит и слабо подвержена полю тяжести
+        Отрисовка снаряда: пуля летит и слабо подвержена полю тяжести
         для отслеживания соударения введу харрактеристический радиус пули R = 2
         """
         pygame.draw.polygon(screen, BLACK,[[self.x - 2, self.y + 2], [self.x + 2, self.y - 2], [self.x - 5, self.y - 5]])
 
     def hit_target_type_1(self, target):
         """
-        Проверка соударяется ли какая-либо цель со снарядом
+        Проверка соударяется ли какая-либо цель с бомбочкой
         """
         if ((self.y - target.y) ** 2 + (self.x - target.x) ** 2 <= (target.r + self.r) ** 2):
             return True
@@ -194,7 +183,7 @@ class bullet:
 
     def hit_target_type_2(self, target):
         """
-        Проверка соударяется ли какая-либо цель со снарядом
+        Проверка соударяется ли какая-либо цель с пулей
         """
         if ((self.y - target.y) ** 2 + (self.x - target.x) ** 2 <= (target.r + self.R) ** 2):
             return True
@@ -216,7 +205,7 @@ class bullet:
 
     def moving_bullet_type_2(self):
         """
-        Движегние снаряда - пуля / бомбочка
+        Движегние снаряда - пуля
         """
         self.x += self.vx
         self.y -= self.vy
@@ -228,6 +217,7 @@ finished = False
 # создание пушки, множества снарядов и мнодества целей
 main_gun = gun()
 set_of_bullet = []
+set_of_bombs = []
 set_of_target = [target() for i in range(target_count)]
 
 # следующий код служит для работы пушки, а имено механизма индикатора стрельбы и т.п.
@@ -236,11 +226,6 @@ flag_2 = 0
 while not finished:
     clock.tick(FPS)
     for event in pygame.event.get():
-        if (event.type == pygame.K_LEFT):
-            main_gun.move_left()
-        if (event.type == pygame.K_RIGHT):
-            main_gun.move_right()
-
         if event.type == pygame.QUIT:
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -249,11 +234,12 @@ while not finished:
         elif event.type == pygame.MOUSEBUTTONUP:
             flag_1 = 1
             flag_2 = 0
-        else:
-            pass
     if flag_1 == 1 and flag_2 == 0:
         a = bullet(main_gun)
-        set_of_bullet.append([a, 0])
+        if randint(1, 5) % 2 == 0:
+            set_of_bullet.append([a, 0])
+        else:
+            set_of_bombs.append([a , 0])
         main_gun.color = DARK_DARK_GREEN
         main_gun.barrel_length = min_gun_len
         main_gun.power = min_power
@@ -264,53 +250,56 @@ while not finished:
         if main_gun.barrel_length < max_gun_len:
             main_gun.barrel_length += 1
             main_gun.power += 0.2
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        main_gun.move_left()
+    if keys[pygame.K_RIGHT]:
+        main_gun.move_right()
+    if keys[pygame.K_UP]:
+        main_gun.move_fordward();
+    if keys[pygame.K_DOWN]:
+        main_gun.move_back()
 
-
-    # отрисовка, движения и проверка соударений
+    #отрисовка, движения и проверка соударений
 
     # 1) нарисовал пушку
     main_gun.draw_gun()
 
     # 2) проверка соударений целей и снарядов
-    # почти случайно мы кидаем пулю / бомбочку или просто бомбочку
+    #  отрисовка моударений бомбочку и целей
     counter = 0
     for i in set_of_bullet:
-        if counter % 2 == 0:
-            for j in set_of_target:
-                if i[0].hit_target_type_1(j):
-                    j.r = min_radius + random() * max_radius
-                    j.x = min_radius + random() * (width - max_radius)
-                    j.y = min_radius + random() * (height - max_radius)
-                    j.vx = random() * max_velocity
-                    j.vy = random() * max_velocity
-        # 3.1) движение и отрисовка бомбочек
-            i[1] += 1
-            if (i[1] < max_life):
-                i[0].moving_bullet_type_1()
-                i[0].draw_bullet_type_1()
-            else:
-                set_of_bullet.remove(i)
-        else:
-            for j in set_of_target:
-                if i[0].hit_target_type_2(j):
-                    j.r = min_radius + random() * max_radius
-                    j.x = min_radius + random() * (width - max_radius)
-                    j.y = min_radius + random() * (height - max_radius)
-                    j.vx = random() * max_velocity
-                    j.vy = random() * max_velocity
-            # 3.2) движение и отрисовка пуль
-            i[1] += 1
+        for j in set_of_target:
+            if i[0].hit_target_type_1(j):
+                j.r = min_radius + random() * max_radius
+                j.x = min_radius + random() * (width - max_radius)
+                j.y = min_radius + random() * (height - max_radius)
+                j.vx = random() * max_velocity
+                j.vy = random() * max_velocity
+        i[1] += 1
+        if (i[1] < max_life):
+            i[0].moving_bullet_type_1()
+            i[0].draw_bullet_type_1()
+
+    for i in set_of_bombs:
+        for j in set_of_target:
+            if i[0].hit_target_type_2(j):
+                j.r = min_radius + random() * max_radius
+                j.x = min_radius + random() * (width - max_radius)
+                j.y = min_radius + random() * (height - max_radius)
+                j.vx = random() * max_velocity
+                j.vy = random() * max_velocity
+        i[1] += 1
+        if (i[1] < max_life):
             i[0].moving_bullet_type_2()
             i[0].draw_bullet_type_2()
-        counter += 1
-    # 4) движение и отрисовка целей
+
+    # 3) движение и отрисовка целей
 
     set_of_target[0].moving_target_type_1()
     set_of_target[0].draw_target()
     set_of_target[1].moving_target_type_2()
     set_of_target[1].draw_target()
-    set_of_target[2].moving_target_type_3()
-    set_of_target[2].draw_target()
 
     pygame.display.update()
     screen.fill((255, 255, 255))
