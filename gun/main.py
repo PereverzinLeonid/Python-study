@@ -47,6 +47,8 @@ class target:
     x, y - координаты мишени
     vx, vy - скорости мишени
     x_0 y_0 - координаты торпеды, котороый будут стрелять цели
+    T - переод пуска торпеды
+    t - время для отсчёта времени жизни торпеды
     """
     def __init__(self):
         """
@@ -55,10 +57,12 @@ class target:
         self.r = min_radius + random() * max_radius
         self.x = min_radius + random() * (width - max_radius)
         self.y = min_radius + random() * (height - max_radius)
-        self.x_0 = 0
-        self.y_0 = 0
+        self.x_0 = self.x
+        self.y_0 = self.y
+        self.vy_0 = 0
         self.vx = random() * max_velocity
         self.vy = random() * max_velocity
+        self.T = 50
 
     def draw_target(self):
         """
@@ -90,6 +94,17 @@ class target:
         if self.y >= height - self.r or self.y <= self.r:
             self.vy = - self.vy
 
+    def move_torpeda(self):
+        self.vy_0 += g
+        self.y_0 += self.vy_0
+        if (self.y_0 > height):
+            self.x_0 = self.x
+            self.y_0 = self.y
+            self.vy_0 = 0
+
+    def draw_torpeda(self):
+        
+        pygame.draw.polygon(screen, RED, [[self.x_0, self.y_0], [self.x_0 - 6, self.y_0 - 10], [self.x_0 + 6, self.y_0 - 10 ]])
 
 class gun:
     """
@@ -105,7 +120,7 @@ class gun:
         """
         self.barrel_length = min_gun_len
         self.x = 500
-        self.y = 500
+        self.y = 900
         self.vx = 2
         self.vy = 2
         self.power = min_power
@@ -259,6 +274,11 @@ while not finished:
         main_gun.move_fordward();
     if keys[pygame.K_DOWN]:
         main_gun.move_back()
+
+    for i in set_of_target:
+        i.move_torpeda()
+        i.draw_torpeda()
+
 
     #отрисовка, движения и проверка соударений
 
