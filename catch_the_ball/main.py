@@ -119,11 +119,11 @@ while not finished:
             for i in range(count_usually_ball):
                 if (mouse_pos[0] - data_usually_ball[i].x_cordinant) ** 2 + (mouse_pos[1] - data_usually_ball[i].y_cordinant) ** 2 <= data_usually_ball[i].radius ** 2:
                     new_usually_ball(i)
-                    score = score + 19
+                    score = score + 1
             for i in range(count_unusually_ball):
                 if (mouse_pos[0] - data_unusually_ball[i].x_cordinant) ** 2 + (mouse_pos[1] - data_unusually_ball[i].y_cordinant) ** 2 <= data_unusually_ball[i].radius ** 2:
                     new_unusually_ball(i)
-                    score = score + 37
+                    score = score + 3
 
 
     # работа с обычным шариком

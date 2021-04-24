@@ -2,10 +2,12 @@
 Player score = 0000530 - Биби
 Player score = 0000244 - Лосяш
 Player score = 0000214 - Пин
+Player score = 0000170 - Сова
 Player score = 0000151 - Карыч
 Player score = 0000144 - Совунья
 Player score = 0000094 - Ёжик
 Player score = 0000071 - Копатыч
 Player score = 0000069 - Крош
 Player score = 0000068 - Бараш
-
+Player score = 0000048 - Лось
+Player score = 0000006 - Гусь
